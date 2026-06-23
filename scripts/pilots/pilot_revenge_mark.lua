@@ -26,6 +26,21 @@ local function BoardHasAbility()
 	end
 end
 
+local function isGame()
+	return true
+		and Game ~= nil
+		and GAME ~= nil
+end
+
+local function isMission()
+	local mission = GetCurrentMission()
+
+	return true
+		and isGame()
+		and mission ~= nil
+		and mission ~= Mission_Test
+end
+
 function this:GetPilot()
 	return pilot
 end
@@ -41,7 +56,7 @@ local EVENT_onPawnDamaged = function(mission, pawn, damageTaken)
 	--LOG(pawn:GetMechName().." has taken "..damageTaken.." damage!")
 
 	--if Board:GetPawn(pawn:GetId()):IsAbility(pilot.Skill) and lastEnemy ~= nil then --only when the pilot is attack
-	if BoardHasAbility() and not pawn:IsEnemy() and lastEnemy ~= nil then --for any ally
+	if isMission() and BoardHasAbility() and not pawn:IsEnemy() and lastEnemy ~= nil then --for any ally
 		--LOG("----------------> HERE!")
 		local se = SkillEffect()
 		local damage = SpaceDamage(lastEnemy:GetSpace(), 0)
@@ -54,7 +69,7 @@ end
 local EVENT_onBuildingDamaged = function(point, damageTaken)
 	--LOG("EVENT_onBuildingDamaged -> Building at: "..point:GetString().." took: "..tostring(damageTaken).." damage!")
 
-	if lastEnemy ~= nil then
+	if lastEnemy ~= nil and BoardHasAbility() then
 		--LOG("----------------> HERE!")
 		local se = SkillEffect()
 		local damage = SpaceDamage(lastEnemy:GetSpace(), 0)
